@@ -1,0 +1,80 @@
+services:
+  backend:
+    build: /home/neosahadeo/Documents/Projects/NeoFlixBackend
+    container_name: backend
+    volumes:
+      - backend_db:/home/neosahadeo/Documents/Projects/NeoFlixBackend/database.db
+    env_file:
+      - /home/neosahadeo/Documents/Projects/NeoFlixBackend/.env
+    ports:
+      - 8000:8000
+    networks:
+      - shared_network
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /home/neosahadeo/Documents/Projects/NeoFlixDocker/sonarr_config:/config
+      - /home/neosahadeo/Documents/Projects/NeoFlixDocker/TVShows:/tv
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks:
+      - shared_network
+  radarr:
+      image: lscr.io/linuxserver/radarr:latest
+      container_name: radarr
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Etc/UTC
+      volumes:
+        - /home/neosahadeo/Documents/Projects/NeoFlixDocker/radarr_config:/config
+        - /home/neosahadeo/Documents/Projects/NeoFlixDocker/Movies:/movies
+      ports:
+        - 7878:7878
+      restart: unless-stopped
+      networks:
+        - shared_network
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /home/neosahadeo/Documents/Projects/NeoFlixDocker/prowlarr_config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    networks:
+      - shared_network
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /home/neosahadeo/Documents/Projects/NeoFlixDocker/qbitorrent_config:/config
+      - /home/neosahadeo/Documents/Projects/NeoFlixDocker/Downloads:/downloads
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+    networks:
+      - shared_network
+networks:
+  shared_network:
+    driver: bridge
+volumes:
+  backend_db:
