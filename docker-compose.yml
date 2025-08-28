@@ -78,4 +78,3 @@ networks:
     driver: bridge
 volumes:
   backend_db:
-
